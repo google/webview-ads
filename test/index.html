@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<!--
+ Copyright 2022 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    />
+    <style>
+      .ad-placeholder {
+        align-items: center;
+        background-color: lightgrey;
+        display: flex;
+        justify-content: center;
+      }
+
+      table {
+        border: 1px solid black;
+        border-collapse: collapse;
+        height: fit-content;
+      }
+
+      tr {
+        height: 100%;
+      }
+
+      td {
+        border: 1px solid black;
+        padding: 0;
+      }
+
+      dl {
+        min-width: 150px;
+        padding: 0 5px;
+      }
+
+      dt {
+        font-weight: bold;
+      }
+
+      dd {
+        font-size: 0.9em;
+        margin-left: 0;
+        margin-top: 10px;
+      }
+
+      .link-type {
+        background-color: beige;
+        width: 50%;
+      }
+
+      .link-target {
+        display: table;
+        height: 50%;
+        text-align: center;
+        width: 100%;
+      }
+
+      .link-target:nth-child(even) {
+        border-top: 1px solid black;
+        background-color: whitesmoke;
+      }
+
+      .link-target a {
+        display: table-cell;
+        font-family: monospace;
+        vertical-align: middle;
+      }
+
+      .ad-placeholder:empty::before {
+        background-color: dimgrey;
+        border-radius: 5px;
+        color: lightgrey;
+        content: "Advertisement";
+        font: 12px sans-serif;
+        padding: 3px;
+        text-align: center;
+        width: 100px;
+      }
+
+      .webview-container,
+      .browser-container {
+        border: 3px solid black;
+        padding: 10px 10px;
+      }
+
+      .counter {
+        font-size: 2rem;
+        vertical-align: sub;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+    <script
+      async
+      src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container-fluid mt-2">
+      <h1>Web View API for Ads Test Page</h1>
+      <!-- Part 1: Set up the web view -->
+      <div class="webview-container hidden">
+        <h3 class="mb-2" id="webview-settings-tests">
+          Set up <span class="webview-name">WebView</span>
+        </h3>
+        <h5 class="mb-2">Web view settings</h5>
+        <p>
+          Tests for your <span class="webview-name">WebView</span> setup, which
+          help improve ad relevance and performance.
+        </p>
+
+        <!-- Third party cookies-->
+        <div
+          class="alert alert-success hidden"
+          role="alert"
+          id="third-party-cookies-success"
+        >
+          ✅ Third party cookies work
+        </div>
+        <div
+          class="alert alert-danger hidden"
+          role="alert"
+          id="third-party-cookies-error-android"
+        >
+          ⚠ Third party cookies are NOT functioning which may adversely impact
+          ad performance.
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://developers.google.com/ad-manager/mobile-ads-sdk/android/webview#enable_third-party_cookies"
+            >Enable third party cookies</a
+          >
+          for best performance.
+        </div>
+        <div
+          class="alert alert-warning hidden"
+          role="alert"
+          id="third-party-cookies-error-ios"
+        >
+          ℹ Third party cookies are NOT functioning which may adversely impact
+          ad performance, but this is expected on iOS devices.
+        </div>
+
+        <!-- First party cookies-->
+        <div
+          class="alert alert-success hidden"
+          role="alert"
+          id="first-party-cookies-success"
+        >
+          ✅ First party cookies work
+        </div>
+        <div
+          class="alert alert-danger hidden"
+          role="alert"
+          id="first-party-cookies-failure"
+        >
+          ⚠ First party cookies are NOT functioning which may adversely impact
+          ad performance.
+          <span id="first-party-cookies-failure-android" class="hidden"
+            >Please ensure
+            <a
+              class="alert-link"
+              target="_blank"
+              href="https://developer.android.com/reference/android/webkit/CookieManager#setAcceptCookie(boolean)"
+              >cookies</a
+            >
+            have not been turned off</span
+          >.
+        </div>
+
+        <!-- JavaScript-->
+        <div
+          class="alert alert-success hidden"
+          role="alert"
+          id="javascript-enabled-success"
+        >
+          ✅ JavaScript enabled
+        </div>
+        <noscript>
+          <div
+            class="alert alert-danger"
+            role="alert"
+            id="javascript-enabled-error"
+          >
+            ⚠ JavaScript is disabled. WebView integration with GMA SDK requires
+            JavaScript to be enabled.
+          </div>
+        </noscript>
+
+        <!-- DOM Storage-->
+        <div
+          class="alert alert-success hidden"
+          role="alert"
+          id="dom-storage-enabled-success"
+        >
+          ✅ DOM storage enabled.
+        </div>
+        <div
+          class="alert alert-warning hidden"
+          role="alert"
+          id="dom-storage-enabled-failure"
+        >
+          ℹ DOM storage is disabled. This may impact ads performance. Please
+          double check
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://developers.google.com/ad-manager/mobile-ads-sdk/android/webview#web_settings"
+            >the instructions</a
+          >.
+        </div>
+
+        <!-- Video Ad-->
+        <h5>Video ad</h5>
+        <h6>Make sure the ad:</h6>
+        <ul>
+          <li>Plays inline.</li>
+          <li>Plays automatically without clicking the play button.</li>
+          <li>Is replayable.</li>
+        </ul>
+        <div
+          id="video-ad"
+          class="border border-3 border-secondary rounded ad-placeholder mb-3"
+          style="width: 306px; height: 256px"
+        ></div>
+      </div>
+
+      <br />
+      <!-- Part 2: WebView API for Ads -->
+      <div class="browser-container">
+        <h3 id="api-for-ads-tests" class="mb-2">Web view API for ads</h3>
+
+        <!-- GPT alerts -->
+        <div
+          class="alert alert-success hidden"
+          role="alert"
+          id="gpt-connected-success"
+        >
+          ✅ Google Publisher Tag connected to GMA SDK
+        </div>
+        <div
+          class="alert alert-danger hidden"
+          role="alert"
+          id="gpt-connected-error"
+        >
+          ⚠ Google Publisher Tag NOT connected with GMA SDK. Please contact
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://support.google.com/admanager/answer/3059042"
+            >Ad Manager</a
+          >
+          or
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://support.google.com/adsense/answer/2581949"
+            >AdSense</a
+          >
+          support.
+        </div>
+        <div
+          class="alert alert-danger hidden"
+          role="alert"
+          id="gpt-connected-error-2"
+        >
+          ⚠ Could not confirm Google Publisher Tag connection with GMA SDK.
+          Performance API was unable to locate the ad request. Please contact
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://support.google.com/admanager/answer/3059042"
+            >Ad Manager</a
+          >
+          or
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://support.google.com/adsense/answer/2581949"
+            >AdSense</a
+          >
+          support.
+        </div>
+        <div
+          class="alert alert-danger hidden"
+          role="alert"
+          id="gpt-connected-error-3"
+        >
+          ⚠ Could not confirm Google Publisher Tag connection with GMA SDK.
+          Unable to query the Performance API. Please contact
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://support.google.com/admanager/answer/3059042"
+            >Ad Manager</a
+          >
+          or
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://support.google.com/adsense/answer/2581949"
+            >AdSense</a
+          >
+          support.
+        </div>
+        <!-- Chrome Custom Tab alerts -->
+        <div
+          class="alert alert-success hidden"
+          role="alert"
+          id="chrome-custom-tab-success"
+        >
+          ✅ Chrome Custom Tab connected to GMA SDK
+        </div>
+        <div
+          class="alert alert-danger hidden"
+          role="alert"
+          id="chrome-custom-tab-failure"
+        >
+          ⚠ Chrome Custom Tab NOT connected with GMA SDK. Please double check
+          <a
+            class="alert-link"
+            target="_blank"
+            href="https://developers.google.com/ad-manager/mobile-ads-sdk/android/browser/custom-tabs"
+            >the instructions</a
+          >.
+        </div>
+        <!-- part 1 -->
+        <div
+          class="alert alert-success hidden"
+          role="alert"
+          id="webview-connected-success"
+        >
+          ✅ <span class="webview-name">WebView</span> connected to GMA SDK
+        </div>
+        <div
+          class="alert alert-danger hidden"
+          role="alert"
+          id="webview-connected-error"
+        >
+          ⚠ <span class="webview-name">WebView</span> NOT connected with GMA
+          SDK.
+          <span class="hidden" id="webview-connected-error-android"
+            >Please double check
+            <a
+              class="alert-link"
+              target="_blank"
+              href="https://developers.google.com/ad-manager/mobile-ads-sdk/android/webview/api-for-ads"
+              >the instructions</a
+            >.</span
+          ><span class="hidden" id="webview-connected-error-ios"
+            >Please double check
+            <a
+              class="alert-link"
+              target="_blank"
+              href="https://developers.google.com/ad-manager/mobile-ads-sdk/ios/webview/api-for-ads"
+              >the instructions</a
+            >.</span
+          >
+        </div>
+        <!-- part 2 -->
+
+        <h5>Reservation ad</h5>
+        <div
+          id="reservation-ad"
+          class="border border-3 border-secondary rounded ad-placeholder mb-3"
+          style="width: 306px; height: 256px"
+        ></div>
+      </div>
+
+      <br />
+      <div class="webview-container hidden">
+        <div>
+          <iframe src="https://check-3pc-iframe.glitch.me" hidden></iframe>
+        </div>
+        <h3 id="click-behavior-tests">Optimize click behavior</h3>
+        <h5>Auction ad</h5>
+        <p>Click on the AdChoices links and make sure they work.</p>
+        <div
+          id="auction-ad"
+          class="border border-3 border-secondary rounded ad-placeholder mb-3"
+          style="width: 306px; height: 256px"
+        ></div>
+        <div>
+          <span class="counter"></span>
+          <p>
+            Check that the link brings you to the right place and the timer does
+            not reset upon your return to the page.
+          </p>
+        </div>
+
+        <h5 id="href-links">href click tests</h5>
+
+        <table>
+          <tr>
+            <td class="link-type">
+              <dl>
+                <dt>In-app browser</dt>
+                <dd>Check the links open in the in-app browser.</dd>
+              </dl>
+            </td>
+            <td>
+              <span class="link-target">
+                <a target="_top" href="https://google.com/">target="_top"</a>
+              </span>
+              <span class="link-target">
+                <a target="_blank" href="https://google.com/"
+                  >target="_blank"</a
+                >
+              </span>
+            </td>
+          </tr>
+          <tr class="android-links hidden">
+            <td class="link-type">
+              <dl>
+                <dt>Google Play Store (https://)</dt>
+                <dd>
+                  Check the links open in the Google Play Store app. If the
+                  Google Play Store app isn't installed on device, links open in
+                  the in-app browser instead.
+                </dd>
+              </dl>
+            </td>
+            <td>
+              <span class="link-target">
+                <a
+                  target="_top"
+                  href="https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox"
+                  >target="_top"</a
+                >
+              </span>
+              <span class="link-target">
+                <a
+                  target="_blank"
+                  href="https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox"
+                  >target="_blank"</a
+                >
+              </span>
+            </td>
+          </tr>
+          <tr class="android-links hidden">
+            <td class="link-type">
+              <dl>
+                <dt>Google Play Store (market://)</dt>
+                <dd>
+                  Check the links open in the Google Play Store app. If the
+                  Google Play Store app isn't installed on device, clicking the
+                  link shows a
+                  <a
+                    href="https://developer.android.com/guide/topics/ui/notifiers/toasts"
+                    >Toast</a
+                  >.
+                </dd>
+              </dl>
+            </td>
+            <td>
+              <span class="link-target">
+                <a
+                  target="_top"
+                  href="market://details?id=com.google.android.googlequicksearchbox"
+                  >target="_top"</a
+                >
+              </span>
+              <span class="link-target">
+                <a
+                  target="_blank"
+                  href="market://details?id=com.google.android.googlequicksearchbox"
+                  >target="_blank"</a
+                >
+              </span>
+            </td>
+          </tr>
+          <tr class="ios-links hidden">
+            <td class="link-type">
+              <dl>
+                <dt>App Store</dt>
+                <dd>Check the links open in the in App Store app.</dd>
+              </dl>
+            </td>
+            <td>
+              <span class="link-target">
+                <a
+                  target="_top"
+                  href="https://apps.apple.com/us/app/google/id284815942"
+                  >target="_top"</a
+                >
+              </span>
+              <span class="link-target">
+                <a
+                  target="_blank"
+                  href="https://apps.apple.com/us/app/google/id284815942"
+                  >target="_blank"</a
+                >
+              </span>
+            </td>
+          </tr>
+        </table>
+        <br />
+
+        <h5 id="javascipt-links">JavaScript click test</h5>
+        <p>Check the link opens in the in-app browser.</p>
+        <button type="button" onclick="openWindowBlank()">
+          window.open("_blank")
+        </button>
+      </div>
+      <br />
+    </div>
+  </body>
+  <script>
+    const ios = isiOS();
+    if (ios) {
+      document.querySelectorAll(".webview-name").forEach((elem) => {
+        elem.textContent = "WKWebView";
+      });
+    }
+
+    // Show/Hide the respective web view solution containers based on the "browser" query parameter.
+    const params = new URLSearchParams(window.location.search);
+    const isWebView = params.get("browser") !== "cct";
+    if (isWebView) {
+      showElement(".webview-container");
+      testWebViewAPI();
+    }
+
+    // Make an ad request.
+    window.googletag = window.googletag || {
+      cmd: [],
+    };
+    googletag.cmd.push(() => {
+      googletag.pubads().addEventListener("slotOnload", () =>
+        setTimeout(() => {
+          // Test browser connection to GPT.
+          testBrowserConnection();
+        }, 1)
+      );
+
+      googletag
+        .defineSlot(
+          "/6355419/Travel/Europe/France/Paris",
+          [300, 250],
+          "reservation-ad"
+        )
+        .addService(googletag.pubads());
+
+      googletag
+        .defineSlot(
+          "/1015330/ca-gfp-rama1/piyr-latency-adsense-image-300x250",
+          [300, 250],
+          "auction-ad"
+        )
+        .addService(googletag.pubads().set("adsense_test_mode", "on"));
+
+      googletag
+        .defineSlot("/6062/qgeng_video_test_ad_unit_1", [300, 200], "video-ad")
+        .addService(googletag.pubads());
+
+      // Disable ad expansion.
+      googletag.setConfig({
+        adExpansion: { enabled: false },
+      });
+
+      googletag.pubads().enableSingleRequest();
+      googletag.enableServices();
+      // Only need one call to display() with single request mode enabled.
+      googletag.display("video-ad");
+    });
+
+    function testBrowserConnection() {
+      const noError = document
+        .getElementById("webview-connected-error")
+        .classList.contains("hidden");
+
+      try {
+        const gptUrl = performance
+          .getEntriesByType("resource")
+          .filter(({ name }) => name.includes("/gampad/ads?"))
+          .pop();
+        if (gptUrl) {
+          const params = new URLSearchParams(gptUrl.name);
+
+          // PACT check - "wst" of 4 or 5 it indicates a successful Chrome Custom Tab integration.
+          if (!isWebView) {
+            const wstParam = params.get("wst");
+            if (wstParam === 4 || wstParam === 5) {
+              showElement("#chrome-custom-tab-success");
+            } else {
+              showElement("#chrome-custom-tab-failure");
+            }
+          }
+
+          if (params.has("scar")) {
+            showElement("#gpt-connected-success");
+          } else {
+            // Detected the global but no scar parameter found.
+            // Contact Google Ad Manager support for help resolving this.
+            if (noError) {
+              showElement("#gpt-connected-error");
+            }
+          }
+        } else {
+          if (noError) {
+            showElement("#gpt-connected-error-2");
+          }
+        }
+      } catch (err) {
+        if (noError) {
+          showElement("#gpt-connected-error-3");
+        }
+      }
+    }
+
+    function openWindowBlank() {
+      window.open("http://google.com", "_blank");
+    }
+
+    function showElement(selector) {
+      document
+        .querySelectorAll(selector)
+        .forEach((elem) => elem.classList.remove("hidden"));
+    }
+
+    // Set up
+    // https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+    function isiOS() {
+      return (
+        [
+          "iPad Simulator",
+          "iPhone Simulator",
+          "iPod Simulator",
+          "iPad",
+          "iPhone",
+          "iPod",
+        ].includes(navigator.platform) ||
+        // iPad on iOS 13 detection
+        (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+      );
+    }
+
+    // Part 1 -- test JS
+    showElement("#javascript-enabled-success");
+
+    // Part 2 -- test WebView api for ads [WebView only]
+    function testWebViewAPI() {
+      if (
+        (typeof window.gmaSdk !== "undefined" &&
+          typeof window.gmaSdk.getQueryInfo === "function") ||
+        (typeof window.webkit !== "undefined" &&
+          typeof window.webkit.messageHandlers !== "undefined" &&
+          typeof window.webkit.messageHandlers.getGmaQueryInfo !==
+            "undefined" &&
+          typeof window.webkit.messageHandlers.getGmaQueryInfo.postMessage ===
+            "function") ||
+        (typeof window.webkit !== "undefined" &&
+          typeof window.webkit.messageHandlers !== "undefined" &&
+          typeof window.webkit.messageHandlers.getGmaSig !== "undefined" &&
+          typeof window.webkit.messageHandlers.getGmaSig.postMessage ===
+            "function")
+      ) {
+        showElement("#webview-connected-success");
+      } else {
+        showElement("#webview-connected-error");
+        if (!ios) {
+          showElement("#webview-connected-error-android");
+        } else {
+          showElement("#webview-connected-error-ios");
+        }
+      }
+    }
+
+    // Part 3 -- test DOM Storage [Android only]
+    if (!ios) {
+      const testKey = "__testgoog__";
+      try {
+        localStorage.setItem(testKey, "1");
+      } catch {
+        showElement("#dom-storage-enabled-failure");
+      } finally {
+        try {
+          if (localStorage.getItem(testKey) === "1") {
+            showElement("#dom-storage-enabled-success");
+          } else {
+            showElement("#dom-storage-enabled-failure");
+          }
+          localStorage.removeItem(testKey);
+        } catch {}
+      }
+    }
+
+    // Part 4 -- test for 3P cookies
+    if (ios) {
+      showElement("#third-party-cookies-error-ios");
+    } else {
+      const receiveMessage = (evt) => {
+        if (evt.data === "3PCunsupported") {
+          showElement("#third-party-cookies-error-android-android");
+        } else if (evt.data === "3PCsupported") {
+          showElement("#third-party-cookies-success");
+        }
+      };
+      window.addEventListener("message", receiveMessage, false);
+    }
+
+    // Part 5 -- test for 1P cookies
+    document.cookie = "firstparty=yes; Max-Age=3600; SameSite=Strict";
+    if (!/firstparty=yes/.test(document.cookie)) {
+      showElement("#first-party-cookies-failure");
+      if (!ios) {
+        showElement("#first-party-cookies-failure-android");
+      }
+    } else {
+      showElement("#first-party-cookies-success");
+    }
+
+    // Part 6 -- show links for iOS/Android
+    if (ios) {
+      showElement(".ios-links");
+    } else {
+      showElement(".android-links");
+    }
+
+    // Part 7 -- show the counter
+    let count = 0;
+
+    setInterval(() => {
+      document.querySelector(".counter").textContent = count++;
+    }, 1000);
+  </script>
+</html>
