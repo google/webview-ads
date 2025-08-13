@@ -109,6 +109,46 @@
         display: none;
       }
     </style>
+   <style>
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #121212;
+          color: #e0e0e0;
+        }
+
+        .webview-container,
+        .browser-container {
+          border-color: #555;
+        }
+
+        table,
+        td {
+          border-color: #555;
+        }
+
+        .link-type {
+          background-color: #2a2a2a;
+        }
+
+        .link-target:nth-child(even) {
+          background-color: #1e1e1e;
+          border-top-color: #555;
+        }
+
+        .link-target a {
+          color: #8ab4f8;
+        }
+
+        .ad-placeholder {
+          background-color: #333;
+        }
+
+        .ad-placeholder:empty::before {
+          background-color: #555;
+          color: #ccc;
+        }
+      }
+    </style>
     <script
       async
       src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
@@ -742,5 +782,25 @@
     setInterval(() => {
       document.querySelector(".counter").textContent = count++;
     }, 1000);
+  </script>
+  <script>
+    // Light/Dark mode support.
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function updateTheme(event) {
+      if (event.matches) {
+        // Dark mode is enabled.
+        document.documentElement.setAttribute("data-bs-theme", "dark");
+      } else {
+        // Light mode is enabled.
+        document.documentElement.setAttribute("data-bs-theme", "light");
+      }
+    }
+
+    // Initial check.
+    updateTheme(darkModeMediaQuery);
+
+    // Listen for changes.
+    darkModeMediaQuery.addEventListener("change", updateTheme);
   </script>
 </html>
