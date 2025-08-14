@@ -787,19 +787,19 @@
   <script>
     // Light/Dark mode support.
     const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const themeFootnote = document.getElementById("theme-footnote");
+    const themeFootnote = document.getElementById("theme-footnote");
 
-    function updateTheme(event) {
-      if (event.matches) {
-        // Dark mode is enabled.
-        document.documentElement.setAttribute("data-bs-theme", "dark");
-        themeFootnote.innerHTML = '<small style="color: grey;">Detected app theme = Dark</small>';
-      } else {
-        // Light mode is enabled.
-        document.documentElement.setAttribute("data-bs-theme", "light");
-        themeFootnote.innerHTML = '<small style="color: grey;">Detected app theme = Light</small>';
-      }
-    }
+    function updateTheme(event) {
+      const isDark = event.matches;
+      // This runs for all devices to set the theme.
+      document.documentElement.setAttribute("data-bs-theme", isDark ? "dark" : "light");
+  
+      // Only run for Android devices.
+      if (!isiOS()) {
+        const themeName = isDark ? "Dark" : "Light";
+        themeFootnote.innerHTML = `<small style="color: grey;">Detected app theme = ${themeName}</small>`;
+      }
+    }
 
     // Initial check.
     updateTheme(darkModeMediaQuery);
