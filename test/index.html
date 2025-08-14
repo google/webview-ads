@@ -793,7 +793,7 @@
       if (event.matches) {
         // Dark mode is enabled.
         document.documentElement.setAttribute("data-bs-theme", "dark");
-        themeFootnote.textContent = '<small style="color: grey;">Detected app theme = Dark</small>';
+        themeFootnote.innerHTML = '<small style="color: grey;">Detected app theme = Dark</small>';
       } else {
         // Light mode is enabled.
         document.documentElement.setAttribute("data-bs-theme", "light");
