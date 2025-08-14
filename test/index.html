@@ -562,6 +562,7 @@
         </button>
       </div>
       <br />
+      <p id="theme-footnote" class="mt-3"></p>
     </div>
   </body>
   <script>
@@ -785,17 +786,20 @@
   </script>
   <script>
     // Light/Dark mode support.
-    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const themeFootnote = document.getElementById("theme-footnote");
 
-    function updateTheme(event) {
-      if (event.matches) {
-        // Dark mode is enabled.
-        document.documentElement.setAttribute("data-bs-theme", "dark");
-      } else {
-        // Light mode is enabled.
-        document.documentElement.setAttribute("data-bs-theme", "light");
-      }
-    }
+    function updateTheme(event) {
+      if (event.matches) {
+        // Dark mode is enabled.
+        document.documentElement.setAttribute("data-bs-theme", "dark");
+        themeFootnote.textContent = '<small style="color: grey;">Detected app theme = Dark</small>';
+      } else {
+        // Light mode is enabled.
+        document.documentElement.setAttribute("data-bs-theme", "light");
+        themeFootnote.innerHTML = '<small style="color: grey;">Detected app theme = Light</small>';
+      }
+    }
 
     // Initial check.
     updateTheme(darkModeMediaQuery);
