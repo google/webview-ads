@@ -679,6 +679,7 @@
 
     // Set up
     // https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+    // https://github.com/chrisdancee/react-ios-pwa-prompt/issues/15?utm_source=chatgpt.com
     function isiOS() {
       return (
         [
@@ -690,7 +691,7 @@
           "iPod",
         ].includes(navigator.platform) ||
         // iPad on iOS 13 detection
-        (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+        (navigator.userAgent.includes("Mac") && (navigator.maxTouchPoints > 1 || "ontouchend" in document))
       );
     }
 
