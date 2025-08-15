@@ -640,7 +640,7 @@
           // PACT check - "wst" of 4 or 5 it indicates a successful Chrome Custom Tab integration.
           if (!isWebView) {
             const wstParam = params.get("wst");
-            if (wstParam === 4 || wstParam === 5) {
+            if (wstParam === "4" || wstParam === "5") {
               showElement("#chrome-custom-tab-success");
             } else {
               showElement("#chrome-custom-tab-failure");
@@ -752,7 +752,7 @@
     } else {
       const receiveMessage = (evt) => {
         if (evt.data === "3PCunsupported") {
-          showElement("#third-party-cookies-error-android-android");
+          showElement("#third-party-cookies-error-android");
         } else if (evt.data === "3PCsupported") {
           showElement("#third-party-cookies-success");
         }
