@@ -800,7 +800,10 @@
         const themeName = isDark ? "dark" : "light";
         themeFootnote.innerHTML = '<small>' +
         'This page uses <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme" target="_blank">prefers-color-scheme</a> ' +
-        'to detect the light or dark theme setting from the webview context. The detected theme is ' + themeName + '.</small>';
+        'to detect the light or dark theme setting from the webview context. The detected theme is ' + themeName + '. If your webview theme setting ' +
+        'does not match the theme setting of your app, please follow the ' +
+        '<a href="https://developer.android.com/develop/ui/views/layout/webapps/dark-theme" target"_blank">Darken web content in WebView</a> ' +
+        'instructions.</small>';
       }
     }
 
