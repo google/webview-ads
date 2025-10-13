@@ -157,6 +157,7 @@
   <body>
     <div class="container-fluid mt-2">
       <h1>Web View API for Ads Test Page</h1>
+      <!-- Part 1: Set up the web view -->
       <div class="webview-container hidden">
         <h3 class="mb-2" id="webview-settings-tests">
           Set up <span class="webview-name">WebView</span>
@@ -167,6 +168,7 @@
           help improve ad relevance and performance.
         </p>
 
+        <!-- Third party cookies-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -198,6 +200,7 @@
           ad performance, but this is expected on iOS devices.
         </div>
 
+        <!-- First party cookies-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -224,6 +227,7 @@
           >.
         </div>
 
+        <!-- JavaScript-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -242,6 +246,7 @@
           </div>
         </noscript>
 
+        <!-- DOM Storage-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -264,6 +269,7 @@
           >.
         </div>
 
+        <!-- Video Ad-->
         <h5>Video ad</h5>
         <h6>Make sure the ad:</h6>
         <ul>
@@ -280,9 +286,11 @@
       </div>
 
       <br />
+      <!-- Part 2: WebView API for Ads -->
       <div class="browser-container">
         <h3 id="api-for-ads-tests" class="mb-2">Web view API for ads</h3>
 
+        <!-- GPT alerts -->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -355,6 +363,7 @@
           >
           support.
         </div>
+        <!-- Chrome Custom Tab alerts -->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -375,6 +384,7 @@
             >the instructions</a
           >.
         </div>
+        <!-- part 1 -->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -407,6 +417,7 @@
             >.</span
           >
         </div>
+        <!-- part 2 -->
         <h5>Reservation ad</h5>
         <div
           id="reservation-ad"
@@ -733,7 +744,7 @@
       }
     }
 
-    // Part 4 -- test for 3P cookies [REFACTORED]
+    // Part 4 -- test for 3P cookies
     if (ios) {
       showElement("#third-party-cookies-error-ios");
     } else {
