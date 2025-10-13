@@ -1,20 +1,4 @@
 <!DOCTYPE html>
-<!--
- Copyright 2022 Google LLC
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -109,7 +93,7 @@
         display: none;
       }
     </style>
-   <style>
+    <style>
       @media (prefers-color-scheme: dark) {
         body {
           background-color: #121212;
@@ -157,7 +141,6 @@
   <body>
     <div class="container-fluid mt-2">
       <h1>Web View API for Ads Test Page</h1>
-      <!-- Part 1: Set up the web view -->
       <div class="webview-container hidden">
         <h3 class="mb-2" id="webview-settings-tests">
           Set up <span class="webview-name">WebView</span>
@@ -168,7 +151,6 @@
           help improve ad relevance and performance.
         </p>
 
-        <!-- Third party cookies-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -200,7 +182,6 @@
           ad performance, but this is expected on iOS devices.
         </div>
 
-        <!-- First party cookies-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -227,7 +208,6 @@
           >.
         </div>
 
-        <!-- JavaScript-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -246,7 +226,6 @@
           </div>
         </noscript>
 
-        <!-- DOM Storage-->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -269,7 +248,6 @@
           >.
         </div>
 
-        <!-- Video Ad-->
         <h5>Video ad</h5>
         <h6>Make sure the ad:</h6>
         <ul>
@@ -286,11 +264,9 @@
       </div>
 
       <br />
-      <!-- Part 2: WebView API for Ads -->
       <div class="browser-container">
         <h3 id="api-for-ads-tests" class="mb-2">Web view API for ads</h3>
 
-        <!-- GPT alerts -->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -363,7 +339,6 @@
           >
           support.
         </div>
-        <!-- Chrome Custom Tab alerts -->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -384,7 +359,6 @@
             >the instructions</a
           >.
         </div>
-        <!-- part 1 -->
         <div
           class="alert alert-success hidden"
           role="alert"
@@ -417,8 +391,6 @@
             >.</span
           >
         </div>
-        <!-- part 2 -->
-
         <h5>Reservation ad</h5>
         <div
           id="reservation-ad"
@@ -430,8 +402,7 @@
       <br />
       <div class="webview-container hidden">
         <div>
-          <iframe src="https://check-3pc-iframe.glitch.me" hidden></iframe>
-        </div>
+          </div>
         <h3 id="click-behavior-tests">Optimize click behavior</h3>
         <h5>Auction ad</h5>
         <p>Click on the AdChoices links and make sure they work.</p>
@@ -746,19 +717,58 @@
       }
     }
 
-    // Part 4 -- test for 3P cookies
+    // Part 4 -- test for 3P cookies [REFACTORED]
     if (ios) {
       showElement("#third-party-cookies-error-ios");
     } else {
-      const receiveMessage = (evt) => {
-        if (evt.data === "3PCunsupported") {
-          showElement("#third-party-cookies-error-android");
-        } else if (evt.data === "3PCsupported") {
-          showElement("#third-party-cookies-success");
-        }
-      };
-      window.addEventListener("message", receiveMessage, false);
+        const checkThirdPartyCookies = () => {
+        const iframeContent = `
+            <!DOCTYPE html>
+            <html>
+            <body>
+                <script>
+                try {
+                    // In a sandboxed iframe from a data: URL, the origin is 'null'.
+                    // Browsers that block 3rd party storage often block it for null origins.
+                    window.sessionStorage.setItem('3pc_test', 'true');
+                    window.sessionStorage.removeItem('3pc_test');
+                    // If we got here without an exception, storage is available.
+                    window.parent.postMessage('3PCsupported', '*');
+                } catch (e) {
+                    // An exception means storage access is blocked.
+                    window.parent.postMessage('3PCunsupported', '*');
+                }
+                <\/script>
+            </body>
+            </html>
+        `;
+
+        const receiver = (evt) => {
+            if (evt.data === '3PCsupported' || evt.data === '3PCunsupported') {
+            if (evt.data === '3PCsupported') {
+                showElement('#third-party-cookies-success');
+            } else {
+                showElement('#third-party-cookies-error-android');
+            }
+            // Clean up listener and iframe
+            window.removeEventListener('message', receiver);
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+            }
+        };
+        window.addEventListener('message', receiver, false);
+
+        const iframe = document.createElement('iframe');
+        iframe.hidden = true;
+        iframe.sandbox = 'allow-scripts allow-same-origin';
+        iframe.src = `data:text/html;charset=utf-8,${encodeURIComponent(iframeContent)}`;
+        document.body.appendChild(iframe);
+        };
+
+        checkThirdPartyCookies();
     }
+
 
     // Part 5 -- test for 1P cookies
     document.cookie = "firstparty=yes; Max-Age=3600; SameSite=Strict";
@@ -787,23 +797,23 @@
   </script>
   <script>
     // Light/Dark mode support.
-    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const themeFootnote = document.getElementById("theme-footnote");
 
-    function updateTheme(event) {
+    function updateTheme(event) {
       const isDark = event.matches;
       // This runs for all devices to set the theme.
       document.documentElement.setAttribute("data-bs-theme", isDark ? "dark" : "light");
-  
+
       // Only run for Android devices.
       if (!isiOS()) {
         const themeName = isDark ? "dark" : "light";
         themeFootnote.innerHTML = '<small>' +
-        'This page uses <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme" target="_blank">prefers-color-scheme</a> ' +
-        'to detect the light or dark theme setting from the webview context. The detected theme is ' + themeName + '. If your webview theme setting ' +
-        'does not match the theme setting of your app, please follow the ' +
-        '<a href="https://developer.android.com/develop/ui/views/layout/webapps/dark-theme" target"_blank">Darken web content in WebView</a> ' +
-        'instructions.</small>';
+          'This page uses <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme" target="_blank">prefers-color-scheme</a> ' +
+          'to detect the light or dark theme setting from the webview context. The detected theme is ' + themeName + '. If your webview theme setting ' +
+          'does not match the theme setting of your app, please follow the ' +
+          '<a href="https://developer.android.com/develop/ui/views/layout/webapps/dark-theme" target"_blank">Darken web content in WebView</a> ' +
+          'instructions.</small>';
       }
     }
 
