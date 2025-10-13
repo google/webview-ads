@@ -777,7 +777,7 @@
             } else {
                 showElement('#third-party-cookies-error-android');
             }
-            // Clean up listener and iframe
+            // Clean up listener and iframe.
             window.removeEventListener('message', receiver);
             if (iframe.parentNode) {
                 iframe.parentNode.removeChild(iframe);
